@@ -24,6 +24,12 @@ def main():
         # Add user input to chat history
         chat_history.append({"role": "user", "content": message})
 
+        # Check if history is longer than 16 messages
+        # This is to prevent the API from consuming too many Tokens
+        if len(chat_history) > 16:
+            # Remove the oldest message
+            chat_history.pop(0)
+
         # Get response from OpenAI and filter the content
         response = create_completion(chat_history)
         response_content = response["choices"][0]["message"]["content"]
@@ -35,13 +41,13 @@ def main():
         print(f"Assistant: {response_content}")
 
 
-def create_completion(chat_history):
+def create_completion(chat_history: list[dict]) -> openai.ChatCompletion:
     """
     Create a completion using the OpenAI API.
 
     Parameters
     ----------
-    chat_history: list
+    chat_history: list[dict]
         The chat history to use for the completion.
 
     Returns
